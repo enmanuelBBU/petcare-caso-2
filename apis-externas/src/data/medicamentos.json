@@ -1,0 +1,10 @@
+[
+  { "codigo": "MED-001", "nombre": "Apoquel 3.6 mg", "principioActivo": "Oclacitinib", "presentacion": "Comprimidos", "especies": ["Perro"], "indicaciones": "Prurito asociado a dermatitis alergica" },
+  { "codigo": "MED-002", "nombre": "Amoxicilina 250 mg", "principioActivo": "Amoxicilina", "presentacion": "Comprimidos", "especies": ["Perro", "Gato"], "indicaciones": "Infecciones bacterianas" },
+  { "codigo": "MED-003", "nombre": "Meloxicam 1.5 mg/ml", "principioActivo": "Meloxicam", "presentacion": "Suspension oral", "especies": ["Perro", "Gato"], "indicaciones": "Dolor e inflamacion" },
+  { "codigo": "MED-004", "nombre": "Drontal Plus", "principioActivo": "Praziquantel + Pirantel + Febantel", "presentacion": "Comprimidos", "especies": ["Perro"], "indicaciones": "Antiparasitario interno" },
+  { "codigo": "MED-005", "nombre": "Bravecto 500 mg", "principioActivo": "Fluralaner", "presentacion": "Comprimido masticable", "especies": ["Perro"], "indicaciones": "Pulgas y garrapatas" },
+  { "codigo": "MED-006", "nombre": "Metronidazol 250 mg", "principioActivo": "Metronidazol", "presentacion": "Comprimidos", "especies": ["Perro", "Gato"], "indicaciones": "Infecciones gastrointestinales" },
+  { "codigo": "MED-007", "nombre": "Tramadol 50 mg", "principioActivo": "Tramadol", "presentacion": "Comprimidos", "especies": ["Perro"], "indicaciones": "Dolor moderado a severo" },
+  { "codigo": "MED-008", "nombre": "Revolution Gatos", "principioActivo": "Selamectina", "presentacion": "Pipeta", "especies": ["Gato"], "indicaciones": "Antiparasitario externo e interno" }
+]

@@ -1,0 +1,41 @@
+# --- Dependencias y compilados ---
+node_modules/
+target/
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# --- Variables de entorno / secretos ---
+.env
+.env.*
+
+# --- IDEs y sistema ---
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+*.log
+
+# --- Claude Code, skills y herramientas de IA ---
+.claude/
+.claude-*/
+CLAUDE.md
+CLAUDE.local.md
+**/.claude/
+**/CLAUDE.md
+**/CLAUDE.local.md
+skills/
+.skills/
+**/SKILL.md
+.superpowers/
+graphify-out/
+.mcp.json
+.agents/
+AGENTS.md
+.cursor/
+.cursorrules
+.windsurf/
+.copilot/
+.github/copilot-instructions.md
+.aider*
