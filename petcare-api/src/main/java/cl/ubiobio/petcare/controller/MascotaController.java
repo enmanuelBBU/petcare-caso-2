@@ -2,7 +2,9 @@ package cl.ubiobio.petcare.controller;
 
 import cl.ubiobio.petcare.dto.MascotaRequest;
 import cl.ubiobio.petcare.dto.MascotaResponse;
+import cl.ubiobio.petcare.dto.ReservaResponse;
 import cl.ubiobio.petcare.service.MascotaService;
+import cl.ubiobio.petcare.service.ReservaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,7 @@ import java.util.List;
  *   POST   /api/mascotas              (body incluye clienteId)
  *   PUT    /api/mascotas/{id}
  *   DELETE /api/mascotas/{id}
+ *   GET    /api/mascotas/{id}/reservas
  */
 @RestController
 @RequestMapping("/api/mascotas")
@@ -33,6 +36,7 @@ import java.util.List;
 public class MascotaController {
 
     private final MascotaService mascotaService;
+    private final ReservaService reservaService;
 
     @GetMapping
     public List<MascotaResponse> listar() {
@@ -59,5 +63,10 @@ public class MascotaController {
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         mascotaService.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/reservas")
+    public List<ReservaResponse> listarReservas(@PathVariable Long id) {
+        return reservaService.listarPorMascota(id);
     }
 }
