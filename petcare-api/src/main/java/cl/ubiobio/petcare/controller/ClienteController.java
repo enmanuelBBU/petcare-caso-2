@@ -3,8 +3,10 @@ package cl.ubiobio.petcare.controller;
 import cl.ubiobio.petcare.dto.ClienteRequest;
 import cl.ubiobio.petcare.dto.ClienteResponse;
 import cl.ubiobio.petcare.dto.MascotaResponse;
+import cl.ubiobio.petcare.dto.NotificacionResponse;
 import cl.ubiobio.petcare.dto.ReservaResponse;
 import cl.ubiobio.petcare.service.ClienteService;
+import cl.ubiobio.petcare.service.NotificacionService;
 import cl.ubiobio.petcare.service.ReservaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ import java.util.List;
  *   DELETE /api/clientes/{id}
  *   GET    /api/clientes/{id}/mascotas
  *   GET    /api/clientes/{id}/reservas
+ *   GET    /api/clientes/{id}/notificaciones
  */
 @RestController
 @RequestMapping("/api/clientes")
@@ -40,6 +43,7 @@ public class ClienteController {
 
     private final ClienteService clienteService;
     private final ReservaService reservaService;
+    private final NotificacionService notificacionService;
 
     @GetMapping
     public List<ClienteResponse> listar() {
@@ -81,5 +85,10 @@ public class ClienteController {
     @GetMapping("/{id}/reservas")
     public List<ReservaResponse> listarReservas(@PathVariable Long id) {
         return reservaService.listarPorCliente(id);
+    }
+
+    @GetMapping("/{id}/notificaciones")
+    public List<NotificacionResponse> listarNotificaciones(@PathVariable Long id) {
+        return notificacionService.listarPorCliente(id);
     }
 }

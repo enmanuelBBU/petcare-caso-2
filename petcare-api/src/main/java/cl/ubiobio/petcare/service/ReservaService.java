@@ -47,6 +47,7 @@ public class ReservaService {
     private final TipoServicioRepository tipoServicioRepository;
     private final ClinicaRepository clinicaRepository;
     private final ClienteRepository clienteRepository;
+    private final NotificacionService notificacionService;
 
     // ------------------------------------------------------------------ consultas
 
@@ -130,25 +131,29 @@ public class ReservaService {
         if (req.motivo() != null) {
             reserva.setMotivo(req.motivo());
         }
-        return ReservaResponse.de(reservaRepository.saveAndFlush(reserva));
+        reserva = reservaRepository.saveAndFlush(reserva);
+        notificacionService.notificarModificacion(reserva);
+        return ReservaResponse.de(reserva);
     }
 
     // ------------------------------------------------------------------ cambios de estado
 
-    /** PENDIENTE -> CONFIRMADA */
+    /** PENDIENTE -> CONFIRMADA (notifica al cliente) */
     @Transactional
     public ReservaResponse confirmar(Long id, String motivo) {
         Reserva reserva = cambiarEstado(id, EstadoReserva.CONFIRMADA, Set.of(EstadoReserva.PENDIENTE),
                 motivo != null ? motivo : "Reserva confirmada");
+        notificacionService.notificarConfirmacion(reserva);
         return ReservaResponse.de(reserva);
     }
 
-    /** PENDIENTE | CONFIRMADA -> CANCELADA (libera el horario) */
+    /** PENDIENTE | CONFIRMADA -> CANCELADA (libera el horario y notifica al cliente) */
     @Transactional
     public ReservaResponse cancelar(Long id, String motivo) {
         Reserva reserva = cambiarEstado(id, EstadoReserva.CANCELADA,
                 Set.of(EstadoReserva.PENDIENTE, EstadoReserva.CONFIRMADA),
                 motivo != null ? motivo : "Reserva cancelada");
+        notificacionService.notificarCancelacion(reserva);
         return ReservaResponse.de(reserva);
     }
 
