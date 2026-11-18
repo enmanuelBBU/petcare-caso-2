@@ -1,8 +1,10 @@
 package cl.ubiobio.petcare.controller;
 
+import cl.ubiobio.petcare.dto.AtencionResponse;
 import cl.ubiobio.petcare.dto.MascotaRequest;
 import cl.ubiobio.petcare.dto.MascotaResponse;
 import cl.ubiobio.petcare.dto.ReservaResponse;
+import cl.ubiobio.petcare.service.AtencionService;
 import cl.ubiobio.petcare.service.MascotaService;
 import cl.ubiobio.petcare.service.ReservaService;
 import jakarta.validation.Valid;
@@ -29,6 +31,7 @@ import java.util.List;
  *   PUT    /api/mascotas/{id}
  *   DELETE /api/mascotas/{id}
  *   GET    /api/mascotas/{id}/reservas
+ *   GET    /api/mascotas/{id}/historial    (atenciones, tratamientos y medicamentos)
  */
 @RestController
 @RequestMapping("/api/mascotas")
@@ -37,6 +40,7 @@ public class MascotaController {
 
     private final MascotaService mascotaService;
     private final ReservaService reservaService;
+    private final AtencionService atencionService;
 
     @GetMapping
     public List<MascotaResponse> listar() {
@@ -68,5 +72,11 @@ public class MascotaController {
     @GetMapping("/{id}/reservas")
     public List<ReservaResponse> listarReservas(@PathVariable Long id) {
         return reservaService.listarPorMascota(id);
+    }
+
+    /** Historial clinico: atenciones con diagnostico, tratamientos y medicamentos. */
+    @GetMapping("/{id}/historial")
+    public List<AtencionResponse> historial(@PathVariable Long id) {
+        return atencionService.historialPorMascota(id);
     }
 }
