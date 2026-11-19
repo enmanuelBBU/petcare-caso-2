@@ -19,6 +19,7 @@ import java.util.List;
  *   GET    /api/notificaciones?estado=FALLIDA     (filtro opcional)
  *   POST   /api/notificaciones/{id}/reenviar
  *   POST   /api/notificaciones/recordatorios      (envia recordatorios de las reservas de manana)
+ *   POST   /api/notificaciones/recordatorios/vacunas?dias=7   (vacunas por vencer)
  */
 @RestController
 @RequestMapping("/api/notificaciones")
@@ -40,5 +41,10 @@ public class NotificacionController {
     @PostMapping("/recordatorios")
     public List<NotificacionResponse> enviarRecordatorios() {
         return notificacionService.enviarRecordatorios();
+    }
+
+    @PostMapping("/recordatorios/vacunas")
+    public List<NotificacionResponse> enviarRecordatoriosVacunas(@RequestParam(defaultValue = "7") int dias) {
+        return notificacionService.enviarRecordatoriosVacunas(dias);
     }
 }

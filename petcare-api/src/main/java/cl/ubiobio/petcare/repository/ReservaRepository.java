@@ -61,4 +61,14 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     List<Reserva> findByEstado(EstadoReserva estado);
 
     List<Reserva> findByFechaAndEstado(LocalDate fecha, EstadoReserva estado);
+
+    boolean existsByVeterinarioId(Long veterinarioId);
+
+    /** Cantidad de reservas por estado con fecha dentro del periodo: filas [EstadoReserva, Long]. */
+    @Query("""
+            select r.estado, count(r) from Reserva r
+            where r.fecha between :desde and :hasta
+            group by r.estado
+            """)
+    List<Object[]> contarPorEstado(@Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
 }

@@ -86,14 +86,14 @@ Backend `http://<host>:8080`
 | Clientes | `GET/POST /api/clientes` · `GET/PUT/DELETE /api/clientes/{id}` · `GET /api/clientes/rut/{rut}` · `GET /api/clientes/{id}/mascotas` · `GET /api/clientes/{id}/reservas` · `GET /api/clientes/{id}/notificaciones` |
 | Mascotas | `GET/POST /api/mascotas` · `GET/PUT/DELETE /api/mascotas/{id}` · `GET /api/mascotas/{id}/historial` · `GET /api/mascotas/{id}/reservas` · `GET /api/mascotas/{id}/vacunas` |
 | Veterinarios | `GET/POST /api/veterinarios` · `GET/PUT/DELETE /api/veterinarios/{id}` · `GET/POST /api/veterinarios/{id}/horarios` · `DELETE /api/veterinarios/{id}/horarios/{horarioId}` · `GET /api/veterinarios/{id}/disponibilidad?fecha=` |
-| Servicios | `GET/POST /api/servicios` · `PUT/DELETE /api/servicios/{id}` |
+| Servicios | `GET/POST /api/servicios` · `GET/PUT/DELETE /api/servicios/{id}` |
 | Reservas | `GET /api/reservas?estado=&fecha=&veterinarioId=` · `POST /api/reservas` · `GET/PUT /api/reservas/{id}` · `PATCH /api/reservas/{id}/confirmar` · `PATCH /api/reservas/{id}/cancelar` · `PATCH /api/reservas/{id}/atender` · `GET /api/reservas/{id}/historial-estados` |
 | Atenciones | `POST /api/atenciones` · `GET/PUT /api/atenciones/{id}` · `GET /api/atenciones/{id}/tratamientos` |
 | Tratamientos | `POST /api/tratamientos` · `GET/PUT /api/tratamientos/{id}` · `POST /api/tratamientos/{id}/medicamentos` · `DELETE /api/tratamientos/{id}/medicamentos/{medicamentoId}` |
 | Medicamentos | `GET /api/medicamentos/buscar?nombre=` · `GET /api/medicamentos/{codigo}` |
-| Vacunas | `POST /api/vacunas` · `PUT/DELETE /api/vacunas/{id}` · `GET /api/vacunas/proximas?dias=30` |
-| Clínicas | `GET /api/clinicas` · `GET/PUT /api/clinicas/{id}` · `GET /api/clinicas/{id}/ubicacion` |
-| Notificaciones | `GET /api/notificaciones?estado=` · `POST /api/notificaciones/{id}/reenviar` · `POST /api/notificaciones/recordatorios` |
+| Vacunas | `POST /api/vacunas` · `GET/PUT/DELETE /api/vacunas/{id}` · `GET /api/vacunas/proximas?dias=30` |
+| Clínicas | `GET /api/clinicas` · `GET/PUT /api/clinicas/{id}` · `GET /api/clinicas/{id}/ubicacion` · `GET /api/clinicas/geocodificar?direccion=` |
+| Notificaciones | `GET /api/notificaciones?estado=` · `POST /api/notificaciones/{id}/reenviar` · `POST /api/notificaciones/recordatorios` · `POST /api/notificaciones/recordatorios/vacunas?dias=7` |
 | Pagos | `POST /api/pagos` · `GET /api/pagos/reserva/{reservaId}` · `PATCH /api/pagos/{id}/anular` |
 | Reportes | `GET /api/reportes/resumen?desde=&hasta=` · `GET /api/reportes/agenda?fecha=` |
 
@@ -105,11 +105,11 @@ APIs externas `http://<ip-equipo-2>:4000`
 | `GET /api/medicamentos?nombre=amox` ✅ | Busca por nombre o principio activo |
 | `GET /api/medicamentos/{codigo}` ✅ | Detalle de un medicamento |
 | `GET /api/geo/ubicacion?lat=&lng=` ✅ | URL de mapa (OpenStreetMap) y URL para embeber |
-| `GET /api/geo/geocodificar?direccion=` | Pendiente (Nominatim) |
+| `GET /api/geo/geocodificar?direccion=` ✅ | Coordenadas de una direccion (Nominatim / OpenStreetMap) |
 | `POST /api/notificaciones/email` ✅ | `{ para, asunto, mensaje }` (envío simulado; pendiente nodemailer) |
 | `POST /api/notificaciones/sms` ✅ | `{ para, mensaje }` (envío simulado) |
 
-✅ = ya responde. El resto está declarado en los controladores/servicios con `TODO`.
+✅ = ya responde.
 
 ## Base de datos
 

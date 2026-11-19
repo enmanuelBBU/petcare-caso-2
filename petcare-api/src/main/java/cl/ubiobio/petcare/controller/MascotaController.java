@@ -4,9 +4,11 @@ import cl.ubiobio.petcare.dto.AtencionResponse;
 import cl.ubiobio.petcare.dto.MascotaRequest;
 import cl.ubiobio.petcare.dto.MascotaResponse;
 import cl.ubiobio.petcare.dto.ReservaResponse;
+import cl.ubiobio.petcare.dto.VacunaResponse;
 import cl.ubiobio.petcare.service.AtencionService;
 import cl.ubiobio.petcare.service.MascotaService;
 import cl.ubiobio.petcare.service.ReservaService;
+import cl.ubiobio.petcare.service.VacunaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +34,7 @@ import java.util.List;
  *   DELETE /api/mascotas/{id}
  *   GET    /api/mascotas/{id}/reservas
  *   GET    /api/mascotas/{id}/historial    (atenciones, tratamientos y medicamentos)
+ *   GET    /api/mascotas/{id}/vacunas      (carnet de vacunacion)
  */
 @RestController
 @RequestMapping("/api/mascotas")
@@ -41,6 +44,7 @@ public class MascotaController {
     private final MascotaService mascotaService;
     private final ReservaService reservaService;
     private final AtencionService atencionService;
+    private final VacunaService vacunaService;
 
     @GetMapping
     public List<MascotaResponse> listar() {
@@ -78,5 +82,11 @@ public class MascotaController {
     @GetMapping("/{id}/historial")
     public List<AtencionResponse> historial(@PathVariable Long id) {
         return atencionService.historialPorMascota(id);
+    }
+
+    /** Carnet de vacunacion de la mascota. */
+    @GetMapping("/{id}/vacunas")
+    public List<VacunaResponse> vacunas(@PathVariable Long id) {
+        return vacunaService.listarPorMascota(id);
     }
 }

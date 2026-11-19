@@ -9,4 +9,8 @@ import org.springframework.stereotype.Repository;
 public interface TipoServicioRepository extends JpaRepository<TipoServicio, Long> {
 
     List<TipoServicio> findByActivoTrue();
+
+    boolean existsByNombreIgnoreCase(String nombre);
+
+    boolean existsByNombreIgnoreCaseAndIdNot(String nombre, Long id);
 }

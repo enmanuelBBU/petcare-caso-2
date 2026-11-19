@@ -9,6 +9,7 @@ import cl.ubiobio.petcare.exception.ResourceNotFoundException;
 import cl.ubiobio.petcare.model.entity.Cliente;
 import cl.ubiobio.petcare.model.entity.Notificacion;
 import cl.ubiobio.petcare.model.entity.Reserva;
+import cl.ubiobio.petcare.model.entity.Vacuna;
 import cl.ubiobio.petcare.model.enums.CanalNotificacion;
 import cl.ubiobio.petcare.model.enums.EstadoNotificacion;
 import cl.ubiobio.petcare.model.enums.EstadoReserva;
@@ -16,6 +17,7 @@ import cl.ubiobio.petcare.model.enums.TipoNotificacion;
 import cl.ubiobio.petcare.repository.ClienteRepository;
 import cl.ubiobio.petcare.repository.NotificacionRepository;
 import cl.ubiobio.petcare.repository.ReservaRepository;
+import cl.ubiobio.petcare.repository.VacunaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -45,6 +47,7 @@ public class NotificacionService {
     private final NotificacionApiClient notificacionApiClient;
     private final ClienteRepository clienteRepository;
     private final ReservaRepository reservaRepository;
+    private final VacunaRepository vacunaRepository;
 
     // ------------------------------------------------------------------ eventos de reservas
 
@@ -75,6 +78,19 @@ public class NotificacionService {
         return reservas.stream()
                 .map(r -> notificar(r, TipoNotificacion.RECORDATORIO, "Recordatorio de hora - PetCare",
                         "Le recordamos su hora para %s manana %s a las %s con %s."))
+                .map(NotificacionResponse::de)
+                .toList();
+    }
+
+    /** Avisa a los duenos de las mascotas cuya proxima dosis de vacuna vence en los proximos "dias" dias. */
+    @Transactional
+    public List<NotificacionResponse> enviarRecordatoriosVacunas(int dias) {
+        if (dias < 0) {
+            throw new ReglaNegocioException("El parametro dias no puede ser negativo");
+        }
+        LocalDate hoy = LocalDate.now();
+        return vacunaRepository.findByFechaProximaDosisBetween(hoy, hoy.plusDays(dias)).stream()
+                .map(this::notificarVacuna)
                 .map(NotificacionResponse::de)
                 .toList();
     }
@@ -124,6 +140,21 @@ public class NotificacionService {
         n.setDestinatario(cliente.getEmail());
         n.setAsunto(asunto);
         n.setMensaje(mensaje);
+        enviar(n);
+        return notificacionRepository.save(n);
+    }
+
+    private Notificacion notificarVacuna(Vacuna v) {
+        Cliente cliente = v.getMascota().getCliente();
+        Notificacion n = new Notificacion();
+        n.setCliente(cliente);
+        n.setCanal(CanalNotificacion.EMAIL);
+        n.setTipo(TipoNotificacion.RECORDATORIO);
+        n.setDestinatario(cliente.getEmail());
+        n.setAsunto("Recordatorio de vacuna - PetCare");
+        n.setMensaje("Hola " + cliente.getNombre() + ". La proxima dosis de la vacuna " + v.getNombre()
+                + " de " + v.getMascota().getNombre() + " vence el " + v.getFechaProximaDosis().format(FECHA)
+                + ". Reserve su hora en PetCare.");
         enviar(n);
         return notificacionRepository.save(n);
     }
