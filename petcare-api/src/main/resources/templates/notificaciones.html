@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Notificaciones')}"></head>
+<body>
+<header th:replace="~{fragments/nav :: nav}"></header>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<main class="contenido">
+    <div class="encabezado">
+        <div>
+            <h1>Notificaciones</h1>
+            <p class="subtitulo">Mensajes enviados a los clientes mediante la API externa de notificaciones.</p>
+        </div>
+        <div class="acciones">
+            <form class="inline" th:action="@{/notificaciones}" method="get">
+                <select name="estado" aria-label="Estado">
+                    <option value="">Todas</option>
+                    <option th:each="e : ${estados}" th:value="${e}" th:text="${e}" th:selected="${e == estado}">ESTADO</option>
+                </select>
+                <button class="btn btn-sec" type="submit">Filtrar</button>
+            </form>
+            <form th:action="@{/notificaciones/recordatorios}" method="post">
+                <button class="btn btn-primario" type="submit">Enviar recordatorios de mañana</button>
+            </form>
+        </div>
+    </div>
+
+    <section class="card">
+        <p class="vacio" th:if="${#lists.isEmpty(notificaciones)}">Sin notificaciones</p>
+        <div class="tabla-wrap" th:unless="${#lists.isEmpty(notificaciones)}">
+            <table class="tabla">
+                <thead><tr><th>Fecha</th><th>Tipo</th><th>Canal</th><th>Destinatario</th><th>Asunto</th><th>Estado</th><th>Respuesta API</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="n : ${notificaciones}">
+                    <td class="nowrap" th:text="${#temporals.format(n.creadoEn, 'dd-MM-yyyy HH:mm')}">fecha</td>
+                    <td th:text="${n.tipo}">TIPO</td>
+                    <td th:text="${n.canal}">EMAIL</td>
+                    <td><a th:href="@{/clientes/{id}(id=${n.clienteId})}" th:text="${n.destinatario}">dest</a></td>
+                    <td>
+                        <a th:if="${n.reservaId}" th:href="@{/reservas/{id}(id=${n.reservaId})}" th:text="${n.asunto}">Asunto</a>
+                        <span th:unless="${n.reservaId}" th:text="${n.asunto}">Asunto</span>
+                    </td>
+                    <td><span class="badge" th:classappend="'badge-' + ${n.estado}" th:text="${n.estado}">ESTADO</span></td>
+                    <td style="max-width:16rem;overflow-wrap:anywhere;font-size:.88rem" th:text="${n.respuestaApi} ?: '—'">resp</td>
+                    <td>
+                        <form th:if="${n.estado.name() == 'FALLIDA' or n.estado.name() == 'PENDIENTE'}"
+                              th:action="@{/notificaciones/{id}/reenviar(id=${n.id})}" method="post">
+                            <button class="btn btn-sec btn-chico" type="submit">Reenviar</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>
