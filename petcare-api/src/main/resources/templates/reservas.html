@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Reservas')}"></head>
+<body>
+<header th:replace="~{fragments/nav :: nav}"></header>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<main class="contenido">
+    <div class="encabezado">
+        <h1>Reservas</h1>
+        <a class="btn btn-primario" th:href="@{/reservas/nueva}">Nueva reserva</a>
+    </div>
+
+    <form class="card filtros" th:action="@{/reservas}" method="get">
+        <div class="campo">
+            <label for="f-estado">Estado</label>
+            <select id="f-estado" name="estado">
+                <option value="">Todos</option>
+                <option th:each="e : ${estados}" th:value="${e}" th:text="${e}" th:selected="${e == estado}">ESTADO</option>
+            </select>
+        </div>
+        <div class="campo">
+            <label for="f-fecha">Fecha</label>
+            <input id="f-fecha" type="date" name="fecha" th:value="${fecha}">
+        </div>
+        <div class="campo">
+            <label for="f-vet">Veterinario</label>
+            <select id="f-vet" name="veterinarioId">
+                <option value="">Todos</option>
+                <option th:each="v : ${veterinarios}" th:value="${v.id}" th:text="${v.nombre} + ' ' + ${v.apellido}"
+                        th:selected="${v.id == veterinarioId}">Veterinario</option>
+            </select>
+        </div>
+        <div class="acciones">
+            <button class="btn btn-sec" type="submit">Filtrar</button>
+            <a class="btn btn-sec" th:href="@{/reservas}">Limpiar</a>
+        </div>
+    </form>
+
+    <section class="card">
+        <p class="vacio" th:if="${#lists.isEmpty(reservas)}">No hay reservas con esos filtros</p>
+        <div class="tabla-wrap" th:unless="${#lists.isEmpty(reservas)}">
+            <table class="tabla">
+                <thead><tr><th>Fecha</th><th>Hora</th><th>Mascota</th><th>Cliente</th><th>Veterinario</th><th>Servicio</th><th>Estado</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="r : ${reservas}">
+                    <td class="nowrap" th:text="${#temporals.format(r.fecha, 'dd-MM-yyyy')}">fecha</td>
+                    <td class="nowrap" th:text="${#temporals.format(r.hora, 'HH:mm')}">hora</td>
+                    <td><a th:href="@{/mascotas/{id}(id=${r.mascotaId})}" th:text="${r.mascotaNombre}">Mascota</a></td>
+                    <td><a th:href="@{/clientes/{id}(id=${r.clienteId})}" th:text="${r.clienteNombre}">Cliente</a></td>
+                    <td th:text="${r.veterinarioNombre}">Veterinario</td>
+                    <td th:text="${r.tipoServicioNombre} ?: '—'">Servicio</td>
+                    <td><span class="badge" th:classappend="'badge-' + ${r.estado}" th:text="${r.estado}">ESTADO</span></td>
+                    <td><a class="btn btn-sec btn-chico" th:href="@{/reservas/{id}(id=${r.id})}">Ver</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>
