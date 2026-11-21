@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Registrar atención')}"></head>
+<body>
+<header th:replace="~{fragments/nav :: nav}"></header>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<main class="contenido">
+    <div class="migas" th:if="${reserva}">
+        <a th:href="@{/reservas/{id}(id=${reserva.id})}" th:text="'&larr; Reserva #' + ${reserva.id}">Reserva</a>
+    </div>
+    <div class="encabezado">
+        <div>
+            <h1>Registrar atención</h1>
+            <p class="subtitulo" th:if="${reserva}"
+               th:text="${reserva.mascotaNombre} + ' · ' + ${reserva.clienteNombre} + ' · ' + ${reserva.veterinarioNombre}
+                        + ' · ' + ${#temporals.format(reserva.fecha, 'dd-MM-yyyy')} + ' ' + ${#temporals.format(reserva.hora, 'HH:mm')}">Reserva</p>
+        </div>
+        <span th:if="${reserva}" class="badge" th:classappend="'badge-' + ${reserva.estado}" th:text="${reserva.estado}">ESTADO</span>
+    </div>
+
+    <form class="card" th:object="${form}" th:action="@{/atenciones}" method="post" novalidate>
+        <input type="hidden" th:field="*{reservaId}">
+        <div class="form-grid">
+            <div class="campo ancho-completo" th:classappend="${#fields.hasErrors('motivoConsulta')} ? 'con-error'">
+                <label for="motivoConsulta">Motivo de consulta</label>
+                <input id="motivoConsulta" type="text" maxlength="255" th:field="*{motivoConsulta}">
+                <span class="campo-error" th:if="${#fields.hasErrors('motivoConsulta')}" th:errors="*{motivoConsulta}"></span>
+            </div>
+            <div class="campo ancho-completo">
+                <label for="anamnesis">Anamnesis</label>
+                <textarea id="anamnesis" th:field="*{anamnesis}" maxlength="1000"></textarea>
+            </div>
+            <div class="campo ancho-completo" th:classappend="${#fields.hasErrors('diagnostico')} ? 'con-error'">
+                <label for="diagnostico">Diagnóstico</label>
+                <textarea id="diagnostico" th:field="*{diagnostico}" maxlength="1000"></textarea>
+                <span class="campo-error" th:if="${#fields.hasErrors('diagnostico')}" th:errors="*{diagnostico}"></span>
+            </div>
+            <div class="campo" th:classappend="${#fields.hasErrors('pesoRegistrado')} ? 'con-error'">
+                <label for="pesoRegistrado">Peso (kg)</label>
+                <input id="pesoRegistrado" type="number" step="0.01" min="0" th:field="*{pesoRegistrado}">
+                <span class="campo-error" th:if="${#fields.hasErrors('pesoRegistrado')}" th:errors="*{pesoRegistrado}"></span>
+            </div>
+            <div class="campo" th:classappend="${#fields.hasErrors('temperatura')} ? 'con-error'">
+                <label for="temperatura">Temperatura (°C)</label>
+                <input id="temperatura" type="number" step="0.1" min="30" max="45" th:field="*{temperatura}">
+                <span class="campo-error" th:if="${#fields.hasErrors('temperatura')}" th:errors="*{temperatura}"></span>
+            </div>
+            <div class="campo ancho-completo">
+                <label for="observaciones">Observaciones</label>
+                <textarea id="observaciones" th:field="*{observaciones}" maxlength="1000"></textarea>
+            </div>
+        </div>
+        <div class="form-acciones">
+            <button class="btn btn-primario" type="submit">Registrar atención</button>
+            <a class="btn btn-sec" th:if="${reserva}" th:href="@{/reservas/{id}(id=${reserva.id})}">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>
