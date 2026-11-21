@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${cliente.nombre} + ' ' + ${cliente.apellido})}"></head>
+<body>
+<header th:replace="~{fragments/nav :: nav}"></header>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<main class="contenido">
+    <div class="migas"><a th:href="@{/clientes}">&larr; Clientes</a></div>
+    <div class="encabezado">
+        <div>
+            <h1 th:text="${cliente.nombre} + ' ' + ${cliente.apellido}">Cliente</h1>
+            <p class="subtitulo" th:text="'RUT ' + ${cliente.rut}">RUT</p>
+        </div>
+        <div class="acciones">
+            <a class="btn btn-sec" th:href="@{/clientes/{id}/editar(id=${cliente.id})}">Editar</a>
+            <form th:action="@{/clientes/{id}/eliminar(id=${cliente.id})}" method="post"
+                  th:attr="data-confirm='¿Eliminar a ' + ${cliente.nombre} + ' ' + ${cliente.apellido} + '?'">
+                <button class="btn btn-peligro" type="submit">Eliminar</button>
+            </form>
+        </div>
+    </div>
+
+    <section class="card">
+        <h2>Contacto</h2>
+        <dl class="datos">
+            <dt>Email</dt><dd th:text="${cliente.email}">email</dd>
+            <dt>Teléfono</dt><dd th:text="${cliente.telefono}">teléfono</dd>
+            <dt>Dirección</dt><dd th:text="${cliente.direccion} ?: '—'">dirección</dd>
+        </dl>
+    </section>
+
+    <section class="card">
+        <div class="card-titulo">
+            <h2>Mascotas</h2>
+            <a class="btn btn-primario btn-chico" th:href="@{/mascotas/nueva(clienteId=${cliente.id})}">Agregar mascota</a>
+        </div>
+        <p class="vacio" th:if="${#lists.isEmpty(mascotas)}">Sin mascotas registradas</p>
+        <div class="tabla-wrap" th:unless="${#lists.isEmpty(mascotas)}">
+            <table class="tabla">
+                <thead><tr><th>Nombre</th><th>Especie</th><th>Raza</th><th>Sexo</th><th>Peso</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="m : ${mascotas}">
+                    <td><a th:href="@{/mascotas/{id}(id=${m.id})}" th:text="${m.nombre}">Nombre</a></td>
+                    <td th:text="${m.especie}">Especie</td>
+                    <td th:text="${m.raza} ?: '—'">Raza</td>
+                    <td th:text="${m.sexo} ?: '—'">Sexo</td>
+                    <td class="nowrap" th:text="${m.peso != null} ? ${m.peso} + ' kg' : '—'">Peso</td>
+                    <td>
+                        <div class="acciones">
+                            <a class="btn btn-sec btn-chico" th:href="@{/mascotas/{id}(id=${m.id})}">Ver</a>
+                            <a class="btn btn-sec btn-chico" th:href="@{/reservas/nueva(mascotaId=${m.id})}">Reservar</a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Reservas</h2>
+        <p class="vacio" th:if="${#lists.isEmpty(reservas)}">Sin reservas</p>
+        <div class="tabla-wrap" th:unless="${#lists.isEmpty(reservas)}">
+            <table class="tabla">
+                <thead><tr><th>Fecha</th><th>Hora</th><th>Mascota</th><th>Veterinario</th><th>Estado</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="r : ${reservas}">
+                    <td class="nowrap" th:text="${#temporals.format(r.fecha, 'dd-MM-yyyy')}">fecha</td>
+                    <td class="nowrap" th:text="${#temporals.format(r.hora, 'HH:mm')}">hora</td>
+                    <td th:text="${r.mascotaNombre}">Mascota</td>
+                    <td th:text="${r.veterinarioNombre}">Veterinario</td>
+                    <td><span class="badge" th:classappend="'badge-' + ${r.estado}" th:text="${r.estado}">ESTADO</span></td>
+                    <td><a class="btn btn-sec btn-chico" th:href="@{/reservas/{id}(id=${r.id})}">Ver</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Notificaciones</h2>
+        <p class="vacio" th:if="${#lists.isEmpty(notificaciones)}">Sin notificaciones</p>
+        <div class="tabla-wrap" th:unless="${#lists.isEmpty(notificaciones)}">
+            <table class="tabla">
+                <thead><tr><th>Fecha</th><th>Tipo</th><th>Asunto</th><th>Estado</th></tr></thead>
+                <tbody>
+                <tr th:each="n : ${notificaciones}">
+                    <td class="nowrap" th:text="${#temporals.format(n.creadoEn, 'dd-MM-yyyy HH:mm')}">fecha</td>
+                    <td th:text="${n.tipo}">TIPO</td>
+                    <td th:text="${n.asunto}">Asunto</td>
+                    <td><span class="badge" th:classappend="'badge-' + ${n.estado}" th:text="${n.estado}">ESTADO</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

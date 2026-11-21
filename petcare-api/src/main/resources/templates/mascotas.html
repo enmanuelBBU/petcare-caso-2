@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mascotas')}"></head>
+<body>
+<header th:replace="~{fragments/nav :: nav}"></header>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<main class="contenido">
+    <div class="encabezado">
+        <h1>Mascotas</h1>
+        <a class="btn btn-primario" th:href="@{/mascotas/nueva}">Nueva mascota</a>
+    </div>
+
+    <section class="card">
+        <p class="vacio" th:if="${#lists.isEmpty(mascotas)}">Sin mascotas registradas</p>
+        <div class="tabla-wrap" th:unless="${#lists.isEmpty(mascotas)}">
+            <table class="tabla">
+                <thead><tr><th>Nombre</th><th>Especie</th><th>Raza</th><th>Dueño</th><th>Peso</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="m : ${mascotas}">
+                    <td><a th:href="@{/mascotas/{id}(id=${m.id})}" th:text="${m.nombre}">Nombre</a></td>
+                    <td th:text="${m.especie}">Especie</td>
+                    <td th:text="${m.raza} ?: '—'">Raza</td>
+                    <td><a th:href="@{/clientes/{id}(id=${m.clienteId})}" th:text="${m.clienteNombre}">Dueño</a></td>
+                    <td class="nowrap" th:text="${m.peso != null} ? ${m.peso} + ' kg' : '—'">Peso</td>
+                    <td>
+                        <div class="acciones">
+                            <a class="btn btn-sec btn-chico" th:href="@{/mascotas/{id}(id=${m.id})}">Ver</a>
+                            <a class="btn btn-sec btn-chico" th:href="@{/mascotas/{id}/editar(id=${m.id})}">Editar</a>
+                            <form th:action="@{/mascotas/{id}/eliminar(id=${m.id})}" method="post"
+                                  th:attr="data-confirm='¿Eliminar a ' + ${m.nombre} + '?'">
+                                <button class="btn btn-peligro btn-chico" type="submit">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

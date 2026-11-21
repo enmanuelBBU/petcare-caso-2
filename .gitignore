@@ -39,3 +39,6 @@ AGENTS.md
 .copilot/
 .github/copilot-instructions.md
 .aider*
+
+# Documentos de diseño y planes (locales)
+docs/

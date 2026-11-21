@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${modo == 'editar'} ? 'Modificar reserva' : 'Nueva reserva')}"></head>
+<body>
+<header th:replace="~{fragments/nav :: nav}"></header>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<main class="contenido">
+    <div class="migas">
+        <a th:href="@{/reservas}">&larr; Reservas</a>
+        <span th:if="${modo == 'editar'}"> · <a th:href="@{/reservas/{id}(id=${id})}" th:text="'Reserva #' + ${id}">Reserva</a></span>
+    </div>
+    <div class="encabezado">
+        <div>
+            <h1 th:text="${modo == 'editar'} ? 'Modificar reserva' : 'Nueva reserva'">Reserva</h1>
+            <p class="subtitulo">Elija veterinario y fecha para ver las horas libres. La hora también se puede escribir a mano.</p>
+        </div>
+    </div>
+
+    <form class="card" th:object="${form}" method="post"
+          th:action="${modo == 'editar'} ? @{/reservas/{id}(id=${id})} : @{/reservas}" novalidate>
+        <div class="form-grid">
+            <div class="campo ancho-completo" th:classappend="${#fields.hasErrors('mascotaId')} ? 'con-error'">
+                <label for="mascotaId">Mascota</label>
+                <th:block th:if="${modo == 'editar'}">
+                    <input type="hidden" th:field="*{mascotaId}">
+                    <input id="mascotaId" type="text" readonly
+                           th:value="${reserva.mascotaNombre} + ' — ' + ${reserva.clienteNombre}">
+                </th:block>
+                <select th:unless="${modo == 'editar'}" id="mascotaId" th:field="*{mascotaId}">
+                    <option value="">— Seleccione una mascota —</option>
+                    <optgroup th:each="g : ${mascotasPorCliente}" th:label="${g.key}">
+                        <option th:each="m : ${g.value}" th:value="${m.id}" th:text="${m.nombre} + ' (' + ${m.especie} + ')'">Mascota</option>
+                    </optgroup>
+                </select>
+                <span class="campo-error" th:if="${#fields.hasErrors('mascotaId')}" th:errors="*{mascotaId}"></span>
+            </div>
+            <div class="campo" th:classappend="${#fields.hasErrors('veterinarioId')} ? 'con-error'">
+                <label for="veterinarioId">Veterinario</label>
+                <select id="veterinarioId" th:field="*{veterinarioId}">
+                    <option value="">— Seleccione —</option>
+                    <option th:each="v : ${veterinarios}" th:value="${v.id}"
+                            th:text="${v.nombre} + ' ' + ${v.apellido} + (${v.especialidad} != null ? ' · ' + ${v.especialidad} : '')">Veterinario</option>
+                </select>
+                <span class="campo-error" th:if="${#fields.hasErrors('veterinarioId')}" th:errors="*{veterinarioId}"></span>
+            </div>
+            <div class="campo">
+                <label for="tipoServicioId">Servicio</label>
+                <select id="tipoServicioId" th:field="*{tipoServicioId}">
+                    <option value="">— Sin especificar —</option>
+                    <option th:each="s : ${servicios}" th:value="${s.id}"
+                            th:text="${s.nombre} + ' (' + ${s.duracionMinutos} + ' min)'">Servicio</option>
+                </select>
+            </div>
+            <div class="campo" th:classappend="${#fields.hasErrors('fecha')} ? 'con-error'">
+                <label for="fecha">Fecha</label>
+                <input id="fecha" type="date" th:field="*{fecha}">
+                <span class="campo-error" th:if="${#fields.hasErrors('fecha')}" th:errors="*{fecha}"></span>
+            </div>
+            <div class="campo" th:classappend="${#fields.hasErrors('hora')} ? 'con-error'">
+                <label for="hora">Hora</label>
+                <input id="hora" type="time" step="1800" th:field="*{hora}">
+                <span class="campo-error" th:if="${#fields.hasErrors('hora')}" th:errors="*{hora}"></span>
+            </div>
+            <div class="campo ancho-completo">
+                <span class="ayuda" id="horas-estado">Horas disponibles</span>
+                <div id="horas" class="horas" aria-live="polite"></div>
+            </div>
+            <div class="campo ancho-completo" th:classappend="${#fields.hasErrors('motivo')} ? 'con-error'">
+                <label for="motivo">Motivo de la consulta</label>
+                <input id="motivo" type="text" maxlength="255" th:field="*{motivo}" placeholder="Ej: control anual, vacuna, cojera…">
+                <span class="campo-error" th:if="${#fields.hasErrors('motivo')}" th:errors="*{motivo}"></span>
+            </div>
+        </div>
+        <div class="form-acciones">
+            <button class="btn btn-primario" type="submit" th:text="${modo == 'editar'} ? 'Guardar cambios' : 'Solicitar reserva'">Guardar</button>
+            <a class="btn btn-sec" th:href="${modo == 'editar'} ? @{/reservas/{id}(id=${id})} : @{/reservas}">Cancelar</a>
+        </div>
+    </form>
+</main>
+<script th:src="@{/reserva.js}" defer></script>
+</body>
+</html>

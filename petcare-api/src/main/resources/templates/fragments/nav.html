@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<header class="topbar" th:fragment="nav">
+    <div class="topbar-inner">
+        <a class="marca" th:href="@{/}">
+            <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><g fill="currentColor"><circle cx="6" cy="9" r="2.2"/><circle cx="10" cy="5.5" r="2.2"/><circle cx="14" cy="5.5" r="2.2"/><circle cx="18" cy="9" r="2.2"/><path d="M12 10.5c-3 0-6 3.6-6 6.3 0 1.9 1.5 2.7 3 2.7 1.2 0 2-.6 3-.6s1.8.6 3 .6c1.5 0 3-.8 3-2.7 0-2.7-3-6.3-6-6.3z"/></g></svg>
+            PetCare
+        </a>
+        <nav class="menu" aria-label="Principal">
+            <a th:href="@{/}" th:classappend="${seccion == 'inicio'} ? 'activo'">Inicio</a>
+            <a th:href="@{/clientes}" th:classappend="${seccion == 'clientes'} ? 'activo'">Clientes</a>
+            <a th:href="@{/mascotas}" th:classappend="${seccion == 'mascotas'} ? 'activo'">Mascotas</a>
+            <a th:href="@{/reservas}" th:classappend="${seccion == 'reservas'} ? 'activo'">Reservas</a>
+            <a th:href="@{/veterinarios}" th:classappend="${seccion == 'veterinarios'} ? 'activo'">Veterinarios</a>
+            <a th:href="@{/notificaciones}" th:classappend="${seccion == 'notificaciones'} ? 'activo'">Notificaciones</a>
+            <a th:href="@{/clinica}" th:classappend="${seccion == 'clinica'} ? 'activo'">Clínica</a>
+        </nav>
+    </div>
+</header>
+</body>
+</html>

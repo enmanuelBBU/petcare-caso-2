@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Reserva #' + ${reserva.id})}"></head>
+<body>
+<header th:replace="~{fragments/nav :: nav}"></header>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<main class="contenido" th:with="estado=${reserva.estado.name()}">
+    <div class="migas"><a th:href="@{/reservas}">&larr; Reservas</a></div>
+    <div class="encabezado">
+        <div>
+            <h1>
+                <span th:text="'Reserva #' + ${reserva.id}">Reserva</span>
+                <span class="badge" th:classappend="'badge-' + ${estado}" th:text="${estado}">ESTADO</span>
+            </h1>
+            <p class="subtitulo" th:text="${#temporals.format(reserva.fecha, 'EEEE dd-MM-yyyy')} + ' a las ' + ${#temporals.format(reserva.hora, 'HH:mm')}">fecha</p>
+        </div>
+        <div class="acciones">
+            <a class="btn btn-sec" th:if="${estado == 'PENDIENTE' or estado == 'CONFIRMADA'}"
+               th:href="@{/reservas/{id}/editar(id=${reserva.id})}">Modificar</a>
+            <a class="btn btn-primario" th:if="${estado == 'CONFIRMADA'}"
+               th:href="@{/atenciones/nueva(reservaId=${reserva.id})}">Registrar atención</a>
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <section class="card">
+            <h2>Datos</h2>
+            <dl class="datos">
+                <dt>Mascota</dt><dd><a th:href="@{/mascotas/{id}(id=${reserva.mascotaId})}" th:text="${reserva.mascotaNombre}">Mascota</a></dd>
+                <dt>Cliente</dt><dd><a th:href="@{/clientes/{id}(id=${reserva.clienteId})}" th:text="${reserva.clienteNombre}">Cliente</a></dd>
+                <dt>Veterinario</dt><dd th:text="${reserva.veterinarioNombre}">Veterinario</dd>
+                <dt>Servicio</dt><dd th:text="${reserva.tipoServicioNombre} ?: '—'">Servicio</dd>
+                <dt>Motivo</dt><dd th:text="${reserva.motivo} ?: '—'">Motivo</dd>
+            </dl>
+        </section>
+
+        <section class="card" th:if="${estado == 'PENDIENTE' or estado == 'CONFIRMADA'}">
+            <h2>Cambiar estado</h2>
+            <form th:if="${estado == 'PENDIENTE'}" th:action="@{/reservas/{id}/confirmar(id=${reserva.id})}" method="post"
+                  style="margin-bottom:1rem">
+                <div class="campo">
+                    <label for="motivo-confirmar">Motivo (opcional)</label>
+                    <div class="inline">
+                        <input id="motivo-confirmar" type="text" name="motivo" maxlength="255" placeholder="Ej: confirmada por teléfono">
+                        <button class="btn btn-primario" type="submit">Confirmar</button>
+                    </div>
+                </div>
+            </form>
+            <form th:action="@{/reservas/{id}/cancelar(id=${reserva.id})}" method="post"
+                  data-confirm="¿Cancelar esta reserva? Se notificará al cliente.">
+                <div class="campo">
+                    <label for="motivo-cancelar">Motivo de cancelación (opcional)</label>
+                    <div class="inline">
+                        <input id="motivo-cancelar" type="text" name="motivo" maxlength="255" placeholder="Ej: el cliente no puede asistir">
+                        <button class="btn btn-peligro" type="submit">Cancelar reserva</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <section class="card">
+        <h2>Historial de estados</h2>
+        <p class="vacio" th:if="${#lists.isEmpty(historial)}">Sin cambios registrados</p>
+        <ol class="timeline" th:unless="${#lists.isEmpty(historial)}">
+            <li th:each="h : ${historial}">
+                <div>
+                    <span class="badge" th:if="${h.estadoAnterior != null}" th:classappend="'badge-' + ${h.estadoAnterior}" th:text="${h.estadoAnterior}">ANTERIOR</span>
+                    <span th:if="${h.estadoAnterior != null}">&rarr;</span>
+                    <span class="badge" th:classappend="'badge-' + ${h.estadoNuevo}" th:text="${h.estadoNuevo}">NUEVO</span>
+                </div>
+                <div th:if="${h.motivo}" th:text="${h.motivo}">Motivo</div>
+                <div class="fecha" th:text="${#temporals.format(h.fechaCambio, 'dd-MM-yyyy HH:mm')}">fecha</div>
+            </li>
+        </ol>
+    </section>
+</main>
+</body>
+</html>

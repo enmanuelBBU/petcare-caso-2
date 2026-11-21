@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${mascota.nombre})}"></head>
+<body>
+<header th:replace="~{fragments/nav :: nav}"></header>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<main class="contenido">
+    <div class="migas">
+        <a th:href="@{/mascotas}">&larr; Mascotas</a> ·
+        <a th:href="@{/clientes/{id}(id=${mascota.clienteId})}" th:text="${mascota.clienteNombre}">Dueño</a>
+    </div>
+    <div class="encabezado">
+        <div>
+            <h1 th:text="${mascota.nombre}">Mascota</h1>
+            <p class="subtitulo" th:text="${mascota.especie} + (${mascota.raza} != null ? ' · ' + ${mascota.raza} : '')">Especie</p>
+        </div>
+        <div class="acciones">
+            <a class="btn btn-primario" th:href="@{/reservas/nueva(mascotaId=${mascota.id})}">Nueva reserva</a>
+            <a class="btn btn-sec" th:href="@{/mascotas/{id}/editar(id=${mascota.id})}">Editar</a>
+            <form th:action="@{/mascotas/{id}/eliminar(id=${mascota.id})}" method="post"
+                  th:attr="data-confirm='¿Eliminar a ' + ${mascota.nombre} + '?'">
+                <button class="btn btn-peligro" type="submit">Eliminar</button>
+            </form>
+        </div>
+    </div>
+
+    <section class="card">
+        <h2>Ficha</h2>
+        <dl class="datos">
+            <dt>Dueño</dt><dd><a th:href="@{/clientes/{id}(id=${mascota.clienteId})}" th:text="${mascota.clienteNombre}">Dueño</a></dd>
+            <dt>Sexo</dt><dd th:text="${mascota.sexo} ?: '—'">Sexo</dd>
+            <dt>Nacimiento</dt><dd th:text="${mascota.fechaNacimiento != null} ? ${#temporals.format(mascota.fechaNacimiento, 'dd-MM-yyyy')} : '—'">fecha</dd>
+            <dt>Peso</dt><dd th:text="${mascota.peso != null} ? ${mascota.peso} + ' kg' : '—'">peso</dd>
+            <dt>Color</dt><dd th:text="${mascota.color} ?: '—'">color</dd>
+            <dt>Microchip</dt><dd th:text="${mascota.microchip} ?: '—'">chip</dd>
+        </dl>
+    </section>
+
+    <section class="card">
+        <h2>Historial clínico</h2>
+        <p class="vacio" th:if="${#lists.isEmpty(historial)}">Sin atenciones registradas</p>
+        <article class="atencion" th:each="a : ${historial}">
+            <h3 th:text="${a.diagnostico}">Diagnóstico</h3>
+            <p class="meta">
+                <span th:text="${#temporals.format(a.fechaAtencion, 'dd-MM-yyyy HH:mm')}">fecha</span> ·
+                <span th:text="${a.veterinarioNombre}">Veterinario</span>
+                <span th:if="${a.pesoRegistrado != null}" th:text="' · ' + ${a.pesoRegistrado} + ' kg'"></span>
+                <span th:if="${a.temperatura != null}" th:text="' · ' + ${a.temperatura} + ' °C'"></span>
+            </p>
+            <p th:if="${a.motivoConsulta}" th:text="'Motivo: ' + ${a.motivoConsulta}">Motivo</p>
+            <p th:if="${a.observaciones}" th:text="${a.observaciones}">Observaciones</p>
+            <div class="tratamiento" th:each="t : ${a.tratamientos}">
+                <strong th:text="${t.descripcion}">Tratamiento</strong>
+                <span class="meta" th:text="' · desde ' + ${#temporals.format(t.fechaInicio, 'dd-MM-yyyy')}
+                      + (${t.fechaFin != null} ? ' hasta ' + ${#temporals.format(t.fechaFin, 'dd-MM-yyyy')} : '')">fechas</span>
+                <p th:if="${t.indicaciones}" th:text="${t.indicaciones}" style="margin:.3rem 0 0">Indicaciones</p>
+                <ul th:unless="${#lists.isEmpty(t.medicamentos)}">
+                    <li th:each="m : ${t.medicamentos}"
+                        th:text="${m.nombre} + ' — ' + ${m.dosis} + ', ' + ${m.frecuencia}
+                                 + (${m.duracionDias != null} ? ', ' + ${m.duracionDias} + ' días' : '')
+                                 + (${m.viaAdministracion != null} ? ' (' + ${m.viaAdministracion} + ')' : '')">Medicamento</li>
+                </ul>
+            </div>
+            <a class="btn btn-sec btn-chico" style="margin-top:.5rem"
+               th:href="@{/tratamientos/nuevo(atencionId=${a.id})}">Agregar tratamiento</a>
+        </article>
+    </section>
+
+    <section class="card">
+        <h2>Reservas</h2>
+        <p class="vacio" th:if="${#lists.isEmpty(reservas)}">Sin reservas</p>
+        <div class="tabla-wrap" th:unless="${#lists.isEmpty(reservas)}">
+            <table class="tabla">
+                <thead><tr><th>Fecha</th><th>Hora</th><th>Veterinario</th><th>Servicio</th><th>Estado</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="r : ${reservas}">
+                    <td class="nowrap" th:text="${#temporals.format(r.fecha, 'dd-MM-yyyy')}">fecha</td>
+                    <td class="nowrap" th:text="${#temporals.format(r.hora, 'HH:mm')}">hora</td>
+                    <td th:text="${r.veterinarioNombre}">Veterinario</td>
+                    <td th:text="${r.tipoServicioNombre} ?: '—'">Servicio</td>
+                    <td><span class="badge" th:classappend="'badge-' + ${r.estado}" th:text="${r.estado}">ESTADO</span></td>
+                    <td><a class="btn btn-sec btn-chico" th:href="@{/reservas/{id}(id=${r.id})}">Ver</a></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

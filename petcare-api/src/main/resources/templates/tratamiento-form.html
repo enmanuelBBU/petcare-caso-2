@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Nuevo tratamiento')}"></head>
+<body>
+<header th:replace="~{fragments/nav :: nav}"></header>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<main class="contenido">
+    <div class="migas" th:if="${atencion}">
+        <a th:href="@{/mascotas/{id}(id=${atencion.mascotaId})}" th:text="'&larr; ' + ${atencion.mascotaNombre}">Mascota</a>
+    </div>
+    <div class="encabezado">
+        <div>
+            <h1>Nuevo tratamiento</h1>
+            <p class="subtitulo" th:if="${atencion}"
+               th:text="${atencion.mascotaNombre} + ' · Diagnóstico: ' + ${atencion.diagnostico}">Atención</p>
+        </div>
+    </div>
+
+    <form th:object="${form}" th:action="@{/tratamientos}" method="post" novalidate>
+        <input type="hidden" th:field="*{atencionId}">
+        <section class="card">
+            <h2>Tratamiento</h2>
+            <div class="form-grid">
+                <div class="campo ancho-completo" th:classappend="${#fields.hasErrors('descripcion')} ? 'con-error'">
+                    <label for="descripcion">Descripción</label>
+                    <input id="descripcion" type="text" maxlength="500" th:field="*{descripcion}" placeholder="Ej: Antibioterapia por otitis">
+                    <span class="campo-error" th:if="${#fields.hasErrors('descripcion')}" th:errors="*{descripcion}"></span>
+                </div>
+                <div class="campo ancho-completo">
+                    <label for="indicaciones">Indicaciones</label>
+                    <textarea id="indicaciones" maxlength="1000" th:field="*{indicaciones}"></textarea>
+                </div>
+                <div class="campo" th:classappend="${#fields.hasErrors('fechaInicio')} ? 'con-error'">
+                    <label for="fechaInicio">Fecha de inicio</label>
+                    <input id="fechaInicio" type="date" th:field="*{fechaInicio}">
+                    <span class="campo-error" th:if="${#fields.hasErrors('fechaInicio')}" th:errors="*{fechaInicio}"></span>
+                </div>
+                <div class="campo">
+                    <label for="fechaFin">Fecha de término</label>
+                    <input id="fechaFin" type="date" th:field="*{fechaFin}">
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-titulo">
+                <h2>Medicamentos</h2>
+                <button type="button" class="btn btn-sec btn-chico" id="agregar-manual">Agregar manual</button>
+            </div>
+            <div class="campo">
+                <label for="buscar-med">Buscar en el catálogo de medicamentos (API externa)</label>
+                <div class="inline">
+                    <input id="buscar-med" type="search" placeholder="Ej: amox, meloxicam…" autocomplete="off">
+                    <button type="button" class="btn btn-sec" id="btn-buscar-med">Buscar</button>
+                </div>
+                <span class="campo-error" id="med-error" hidden></span>
+                <ul class="resultados-med" id="resultados-med"></ul>
+            </div>
+
+            <div class="fila-med" style="margin-top:1rem;font-weight:600;color:var(--texto-suave)">
+                <span>Medicamento</span><span>Dosis</span><span>Frecuencia</span><span>Días</span><span>Vía</span><span></span>
+            </div>
+            <div id="filas-med">
+                <div class="fila-med" th:each="m, st : *{medicamentos}">
+                    <div>
+                        <input type="hidden" th:field="*{medicamentos[__${st.index}__].codigoExterno}">
+                        <input type="text" th:field="*{medicamentos[__${st.index}__].nombre}"
+                               th:readonly="${m.codigoExterno != null and !#strings.isEmpty(m.codigoExterno)}" placeholder="Nombre">
+                        <span class="campo-error" th:if="${#fields.hasErrors('medicamentos[__${st.index}__].nombre')}"
+                              th:errors="*{medicamentos[__${st.index}__].nombre}"></span>
+                    </div>
+                    <div>
+                        <input type="text" th:field="*{medicamentos[__${st.index}__].dosis}" placeholder="1 comp">
+                        <span class="campo-error" th:if="${#fields.hasErrors('medicamentos[__${st.index}__].dosis')}"
+                              th:errors="*{medicamentos[__${st.index}__].dosis}"></span>
+                    </div>
+                    <div>
+                        <input type="text" th:field="*{medicamentos[__${st.index}__].frecuencia}" placeholder="cada 12 h">
+                        <span class="campo-error" th:if="${#fields.hasErrors('medicamentos[__${st.index}__].frecuencia')}"
+                              th:errors="*{medicamentos[__${st.index}__].frecuencia}"></span>
+                    </div>
+                    <div>
+                        <input type="number" min="1" th:field="*{medicamentos[__${st.index}__].duracionDias}">
+                        <span class="campo-error" th:if="${#fields.hasErrors('medicamentos[__${st.index}__].duracionDias')}"
+                              th:errors="*{medicamentos[__${st.index}__].duracionDias}"></span>
+                    </div>
+                    <div><input type="text" th:field="*{medicamentos[__${st.index}__].viaAdministracion}" placeholder="Oral"></div>
+                    <button type="button" class="btn btn-sec btn-chico quitar-med" aria-label="Quitar">&times;</button>
+                </div>
+            </div>
+            <p class="vacio" id="sin-med"
+               th:hidden="${!#lists.isEmpty(form.medicamentos)}">Sin medicamentos. Busque en el catálogo o agregue uno manual.</p>
+        </section>
+
+        <div class="form-acciones">
+            <button class="btn btn-primario" type="submit">Guardar tratamiento</button>
+            <a class="btn btn-sec" th:if="${atencion}" th:href="@{/mascotas/{id}(id=${atencion.mascotaId})}">Omitir</a>
+        </div>
+    </form>
+</main>
+<script th:src="@{/medicamentos.js}" defer></script>
+</body>
+</html>

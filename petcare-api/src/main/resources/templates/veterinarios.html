@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Veterinarios')}"></head>
+<body>
+<header th:replace="~{fragments/nav :: nav}"></header>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<main class="contenido">
+    <div class="encabezado">
+        <div>
+            <h1>Veterinarios</h1>
+            <p class="subtitulo">Horarios semanales de atención. Las reservas solo se aceptan dentro de estos bloques.</p>
+        </div>
+    </div>
+
+    <section class="card">
+        <p class="vacio" th:if="${#lists.isEmpty(veterinarios)}">Sin veterinarios activos</p>
+        <div class="tabla-wrap" th:unless="${#lists.isEmpty(veterinarios)}">
+            <table class="tabla">
+                <thead><tr><th>Nombre</th><th>Especialidad</th><th>Email</th><th>Horarios</th></tr></thead>
+                <tbody>
+                <tr th:each="v : ${veterinarios}">
+                    <td class="nowrap" th:text="${v.nombre} + ' ' + ${v.apellido}">Nombre</td>
+                    <td th:text="${v.especialidad} ?: '—'">Especialidad</td>
+                    <td th:text="${v.email}">email</td>
+                    <td>
+                        <span class="vacio" th:if="${#lists.isEmpty(horarios.get(v.id))}" style="padding:0">Sin horarios</span>
+                        <div th:each="h : ${horarios.get(v.id)}" class="nowrap"
+                             th:text="${#strings.capitalize(h.dia)} + ' ' + ${#temporals.format(h.horaInicio, 'HH:mm')} + '–' + ${#temporals.format(h.horaFin, 'HH:mm')}">Lunes 09:00–13:00</div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

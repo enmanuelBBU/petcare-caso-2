@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Clínica')}"></head>
+<body>
+<header th:replace="~{fragments/nav :: nav}"></header>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<main class="contenido">
+    <div class="encabezado">
+        <div>
+            <h1 th:text="${clinica != null} ? ${clinica.nombre} : 'Clínica'">Clínica</h1>
+            <p class="subtitulo" th:if="${clinica}"
+               th:text="${clinica.direccion} + (${clinica.comuna} != null ? ', ' + ${clinica.comuna} : '') + ', ' + ${clinica.ciudad}">Dirección</p>
+        </div>
+        <a class="btn btn-sec" th:if="${ubicacion}" th:href="${ubicacion.urlMapa}" target="_blank" rel="noopener">Abrir en OpenStreetMap</a>
+    </div>
+
+    <div class="grid-2" style="grid-template-columns: minmax(0,1fr) minmax(0,2fr)">
+        <section class="card" th:if="${clinica}">
+            <h2>Datos</h2>
+            <dl class="datos">
+                <dt>Teléfono</dt><dd th:text="${clinica.telefono} ?: '—'">tel</dd>
+                <dt>Email</dt><dd th:text="${clinica.email} ?: '—'">email</dd>
+                <dt>Horario</dt>
+                <dd th:text="${clinica.horaApertura != null} ? ${#temporals.format(clinica.horaApertura, 'HH:mm')} + '–' + ${#temporals.format(clinica.horaCierre, 'HH:mm')} : '—'">horario</dd>
+                <dt>Coordenadas</dt>
+                <dd th:text="${clinica.latitud != null} ? ${clinica.latitud} + ', ' + ${clinica.longitud} : 'Sin calcular'">coord</dd>
+            </dl>
+        </section>
+        <section class="card">
+            <h2>Ubicación</h2>
+            <p class="aviso" th:if="${mapaError}" th:text="${mapaError}">Sin mapa</p>
+            <iframe th:if="${ubicacion}" class="mapa" th:src="${ubicacion.urlEmbed}" title="Mapa de la clínica" loading="lazy"></iframe>
+        </section>
+    </div>
+</main>
+</body>
+</html>

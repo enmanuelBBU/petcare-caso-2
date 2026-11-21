@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div class="toasts" th:fragment="toast">
+    <div class="toast toast-ok" th:if="${ok}" role="status" data-autocierre="6000">
+        <span th:text="${ok}">Operación exitosa</span>
+        <button type="button" class="toast-cerrar" aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="toast toast-error" th:if="${error}" role="alert">
+        <span th:text="${error}">Error</span>
+        <button type="button" class="toast-cerrar" aria-label="Cerrar">&times;</button>
+    </div>
+</div>
+</body>
+</html>
