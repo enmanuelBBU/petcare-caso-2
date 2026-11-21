@@ -51,6 +51,30 @@ caso 2 webOS/
 
 Variables de entorno opcionales: `DB_URL`, `DB_USER`, `DB_PASSWORD`, `APIS_URL` (ej. `http://192.168.1.50:4000`, la IP del equipo con las APIs Node), `CORS_ORIGINS`, `PORT`.
 
+## Frontend
+
+Interfaz web con Thymeleaf servida por el mismo proceso Spring Boot: **http://localhost:8080/**.
+Los controllers web (`web/*PageController`) llaman directo a los mismos services que la API REST; la API `/api/**` no cambia.
+El navegador nunca llama a las APIs Node: Spring las consulta mediante `client/*`.
+
+| Ruta | Pantalla |
+|---|---|
+| `/` | Panel: agenda de hoy, reservas del mes por estado y estado de las APIs externas |
+| `/clientes`, `/clientes/nuevo`, `/clientes/{id}`, `/clientes/{id}/editar` | CRUD de clientes (búsqueda por RUT); ficha con mascotas, reservas y notificaciones |
+| `/mascotas`, `/mascotas/nueva?clienteId=`, `/mascotas/{id}`, `/mascotas/{id}/editar` | CRUD de mascotas; ficha con historial clínico y reservas |
+| `/reservas?estado=&fecha=&veterinarioId=` | Reservas filtrables con insignia de estado |
+| `/reservas/nueva?mascotaId=`, `/reservas/{id}/editar` | Solicitar / modificar reserva con selector de horas libres (`fetch` a `/api/veterinarios/{id}/disponibilidad`) |
+| `/reservas/{id}` | Detalle, historial de estados, confirmar / cancelar (con resultado de la notificación) |
+| `/atenciones/nueva?reservaId=` | Registrar atención (la reserva pasa a ATENDIDA) |
+| `/tratamientos/nuevo?atencionId=` | Tratamiento con búsqueda de medicamentos (`fetch` a `/api/medicamentos/buscar`) |
+| `/clinica` | Datos de la clínica y mapa (OpenStreetMap vía API de geolocalización) |
+| `/notificaciones?estado=` | Notificaciones ENVIADA/FALLIDA, reenvío y recordatorios de mañana |
+| `/veterinarios` | Veterinarios y horarios semanales |
+
+Los errores de negocio del backend (reserva duplicada, transición de estado inválida, API externa caída) se muestran como mensajes en pantalla.
+
+Pruebas del frontend (no requieren MySQL): `./mvnw test -Dtest='*PageControllerTest'`.
+
 ## Funcionalidades
 
 | # | Funcionalidad | Origen |
