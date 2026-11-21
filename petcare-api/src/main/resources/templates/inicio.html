@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Inicio')}"></head>
+<body>
+<header th:replace="~{fragments/nav :: nav}"></header>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<main class="contenido">
+    <div class="encabezado">
+        <div>
+            <h1>Panel de la clínica</h1>
+            <p class="subtitulo" th:text="'Hoy: ' + ${#temporals.format(hoy, 'dd-MM-yyyy')}">Hoy</p>
+        </div>
+        <div class="acciones">
+            <span class="estado-apis" th:if="${apisOk}"><span class="punto punto-ok"></span>APIs externas: conectadas</span>
+            <span class="estado-apis" th:unless="${apisOk}"><span class="punto punto-error"></span>APIs externas: sin conexión</span>
+            <a class="btn btn-sec" th:href="@{/clientes/nuevo}">Nuevo cliente</a>
+            <a class="btn btn-primario" th:href="@{/reservas/nueva}">Nueva reserva</a>
+        </div>
+    </div>
+
+    <section>
+        <h2>Reservas del mes</h2>
+        <div class="grid-4">
+            <a class="card stat" th:each="e : ${estados}" th:classappend="'stat-' + ${e}"
+               th:href="@{/reservas(estado=${e})}" style="text-decoration:none;color:inherit">
+                <span class="badge" th:classappend="'badge-' + ${e}" th:text="${e}">ESTADO</span>
+                <div class="stat-valor" th:text="${resumen.reservasPorEstado.get(e) ?: 0}">0</div>
+            </a>
+        </div>
+    </section>
+
+    <section class="card">
+        <div class="card-titulo"><h2>Agenda de hoy</h2></div>
+        <p class="vacio" th:if="${#lists.isEmpty(agenda)}">Sin reservas para hoy</p>
+        <div th:each="a : ${agenda}" style="margin-bottom:1rem">
+            <h3 th:text="${a.veterinarioNombre} + ' (' + ${a.totalReservas} + ')'">Veterinario</h3>
+            <div class="tabla-wrap">
+                <table class="tabla">
+                    <thead><tr><th>Hora</th><th>Mascota</th><th>Cliente</th><th>Servicio</th><th>Estado</th><th></th></tr></thead>
+                    <tbody>
+                    <tr th:each="r : ${a.reservas}">
+                        <td class="nowrap" th:text="${#temporals.format(r.hora, 'HH:mm')}">10:00</td>
+                        <td th:text="${r.mascotaNombre}">Mascota</td>
+                        <td th:text="${r.clienteNombre}">Cliente</td>
+                        <td th:text="${r.tipoServicioNombre} ?: '—'">Servicio</td>
+                        <td><span class="badge" th:classappend="'badge-' + ${r.estado}" th:text="${r.estado}">ESTADO</span></td>
+                        <td><a class="btn btn-sec btn-chico" th:href="@{/reservas/{id}(id=${r.id})}">Ver</a></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>
