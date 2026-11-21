@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${modo == 'editar'} ? 'Editar cliente' : 'Nuevo cliente')}"></head>
+<body>
+<header th:replace="~{fragments/nav :: nav}"></header>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<main class="contenido">
+    <div class="migas"><a th:href="@{/clientes}">&larr; Clientes</a></div>
+    <div class="encabezado">
+        <h1 th:text="${modo == 'editar'} ? 'Editar cliente' : 'Nuevo cliente'">Cliente</h1>
+    </div>
+
+    <form class="card" th:object="${form}" method="post"
+          th:action="${modo == 'editar'} ? @{/clientes/{id}(id=${id})} : @{/clientes}" novalidate>
+        <div class="form-grid">
+            <div class="campo" th:classappend="${#fields.hasErrors('rut')} ? 'con-error'">
+                <label for="rut">RUT</label>
+                <input id="rut" type="text" th:field="*{rut}" placeholder="12345678-9">
+                <span class="campo-error" th:if="${#fields.hasErrors('rut')}" th:errors="*{rut}"></span>
+            </div>
+            <div class="campo" th:classappend="${#fields.hasErrors('email')} ? 'con-error'">
+                <label for="email">Email</label>
+                <input id="email" type="email" th:field="*{email}">
+                <span class="campo-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+            </div>
+            <div class="campo" th:classappend="${#fields.hasErrors('nombre')} ? 'con-error'">
+                <label for="nombre">Nombre</label>
+                <input id="nombre" type="text" th:field="*{nombre}">
+                <span class="campo-error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+            </div>
+            <div class="campo" th:classappend="${#fields.hasErrors('apellido')} ? 'con-error'">
+                <label for="apellido">Apellido</label>
+                <input id="apellido" type="text" th:field="*{apellido}">
+                <span class="campo-error" th:if="${#fields.hasErrors('apellido')}" th:errors="*{apellido}"></span>
+            </div>
+            <div class="campo" th:classappend="${#fields.hasErrors('telefono')} ? 'con-error'">
+                <label for="telefono">Teléfono</label>
+                <input id="telefono" type="tel" th:field="*{telefono}" placeholder="+56912345678">
+                <span class="campo-error" th:if="${#fields.hasErrors('telefono')}" th:errors="*{telefono}"></span>
+            </div>
+            <div class="campo" th:classappend="${#fields.hasErrors('direccion')} ? 'con-error'">
+                <label for="direccion">Dirección</label>
+                <input id="direccion" type="text" th:field="*{direccion}">
+                <span class="campo-error" th:if="${#fields.hasErrors('direccion')}" th:errors="*{direccion}"></span>
+            </div>
+        </div>
+        <div class="form-acciones">
+            <button class="btn btn-primario" type="submit" th:text="${modo == 'editar'} ? 'Guardar cambios' : 'Registrar cliente'">Guardar</button>
+            <a class="btn btn-sec" th:href="${modo == 'editar'} ? @{/clientes/{id}(id=${id})} : @{/clientes}">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

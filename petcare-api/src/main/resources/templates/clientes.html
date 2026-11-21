@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Clientes')}"></head>
+<body>
+<header th:replace="~{fragments/nav :: nav}"></header>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<main class="contenido">
+    <div class="encabezado">
+        <h1>Clientes</h1>
+        <div class="acciones">
+            <form class="inline" th:action="@{/clientes}" method="get">
+                <input type="search" name="rut" th:value="${rut}" placeholder="Buscar por RUT (12345678-9)" aria-label="RUT">
+                <button class="btn btn-sec" type="submit">Buscar</button>
+                <a class="btn btn-sec" th:if="${rut}" th:href="@{/clientes}">Ver todos</a>
+            </form>
+            <a class="btn btn-primario" th:href="@{/clientes/nuevo}">Nuevo cliente</a>
+        </div>
+    </div>
+
+    <section class="card">
+        <p class="vacio" th:if="${#lists.isEmpty(clientes)}">Sin clientes registrados</p>
+        <div class="tabla-wrap" th:unless="${#lists.isEmpty(clientes)}">
+            <table class="tabla">
+                <thead><tr><th>RUT</th><th>Nombre</th><th>Email</th><th>Teléfono</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="c : ${clientes}">
+                    <td class="nowrap" th:text="${c.rut}">12345678-9</td>
+                    <td><a th:href="@{/clientes/{id}(id=${c.id})}" th:text="${c.nombre} + ' ' + ${c.apellido}">Nombre</a></td>
+                    <td th:text="${c.email}">email</td>
+                    <td class="nowrap" th:text="${c.telefono}">teléfono</td>
+                    <td>
+                        <div class="acciones">
+                            <a class="btn btn-sec btn-chico" th:href="@{/clientes/{id}(id=${c.id})}">Ver</a>
+                            <a class="btn btn-sec btn-chico" th:href="@{/clientes/{id}/editar(id=${c.id})}">Editar</a>
+                            <form th:action="@{/clientes/{id}/eliminar(id=${c.id})}" method="post"
+                                  th:attr="data-confirm='¿Eliminar a ' + ${c.nombre} + ' ' + ${c.apellido} + '?'">
+                                <button class="btn btn-peligro btn-chico" type="submit">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>
