@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${modo == 'editar'} ? 'Editar mascota' : 'Nueva mascota')}"></head>
+<body>
+<header th:replace="~{fragments/nav :: nav}"></header>
+<div th:replace="~{fragments/toast :: toast}"></div>
+<main class="contenido">
+    <div class="migas"><a th:href="@{/mascotas}">&larr; Mascotas</a></div>
+    <div class="encabezado">
+        <h1 th:text="${modo == 'editar'} ? 'Editar mascota' : 'Nueva mascota'">Mascota</h1>
+    </div>
+
+    <form class="card" th:object="${form}" method="post"
+          th:action="${modo == 'editar'} ? @{/mascotas/{id}(id=${id})} : @{/mascotas}" novalidate>
+        <div class="form-grid">
+            <div class="campo ancho-completo" th:classappend="${#fields.hasErrors('clienteId')} ? 'con-error'">
+                <label for="clienteId">Dueño</label>
+                <select id="clienteId" th:field="*{clienteId}">
+                    <option value="">— Seleccione un cliente —</option>
+                    <option th:each="c : ${clientes}" th:value="${c.id}"
+                            th:text="${c.nombre} + ' ' + ${c.apellido} + ' (' + ${c.rut} + ')'">Cliente</option>
+                </select>
+                <span class="campo-error" th:if="${#fields.hasErrors('clienteId')}" th:errors="*{clienteId}"></span>
+            </div>
+            <div class="campo" th:classappend="${#fields.hasErrors('nombre')} ? 'con-error'">
+                <label for="nombre">Nombre</label>
+                <input id="nombre" type="text" th:field="*{nombre}">
+                <span class="campo-error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></span>
+            </div>
+            <div class="campo" th:classappend="${#fields.hasErrors('especie')} ? 'con-error'">
+                <label for="especie">Especie</label>
+                <input id="especie" type="text" th:field="*{especie}" list="especies" placeholder="Perro, Gato…">
+                <datalist id="especies"><option value="Perro"><option value="Gato"><option value="Ave"><option value="Conejo"></datalist>
+                <span class="campo-error" th:if="${#fields.hasErrors('especie')}" th:errors="*{especie}"></span>
+            </div>
+            <div class="campo" th:classappend="${#fields.hasErrors('raza')} ? 'con-error'">
+                <label for="raza">Raza</label>
+                <input id="raza" type="text" th:field="*{raza}">
+                <span class="campo-error" th:if="${#fields.hasErrors('raza')}" th:errors="*{raza}"></span>
+            </div>
+            <div class="campo">
+                <label for="sexo">Sexo</label>
+                <select id="sexo" th:field="*{sexo}">
+                    <option value="">—</option>
+                    <option th:each="s : ${sexos}" th:value="${s}" th:text="${s}">MACHO</option>
+                </select>
+            </div>
+            <div class="campo" th:classappend="${#fields.hasErrors('fechaNacimiento')} ? 'con-error'">
+                <label for="fechaNacimiento">Fecha de nacimiento</label>
+                <input id="fechaNacimiento" type="date" th:field="*{fechaNacimiento}">
+                <span class="campo-error" th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors="*{fechaNacimiento}"></span>
+            </div>
+            <div class="campo" th:classappend="${#fields.hasErrors('peso')} ? 'con-error'">
+                <label for="peso">Peso (kg)</label>
+                <input id="peso" type="number" step="0.01" min="0" th:field="*{peso}">
+                <span class="campo-error" th:if="${#fields.hasErrors('peso')}" th:errors="*{peso}"></span>
+            </div>
+            <div class="campo">
+                <label for="color">Color</label>
+                <input id="color" type="text" th:field="*{color}">
+            </div>
+            <div class="campo">
+                <label for="microchip">Microchip</label>
+                <input id="microchip" type="text" th:field="*{microchip}">
+            </div>
+        </div>
+        <div class="form-acciones">
+            <button class="btn btn-primario" type="submit" th:text="${modo == 'editar'} ? 'Guardar cambios' : 'Registrar mascota'">Guardar</button>
+            <a class="btn btn-sec" th:href="${modo == 'editar'} ? @{/mascotas/{id}(id=${id})} : @{/mascotas}">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>
